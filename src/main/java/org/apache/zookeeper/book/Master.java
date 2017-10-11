@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.zookeeper.AsyncCallback.ChildrenCallback;
@@ -814,27 +815,34 @@ public class Master implements Watcher, Closeable {
      * @param args
      * @throws Exception
      */
-    public static void main(String args[]) throws Exception { 
-        Master m = new Master(args[0]);
+    public static void main(String args[]) throws Exception {
+
+        String hostPort = "localhost:2181";
+        Master m = new Master(hostPort);
+        //创建会话（句柄）
         m.startZK();
+
+
+        TimeUnit.SECONDS.sleep(5);
         
-        while(!m.isConnected()){
-            Thread.sleep(100);
-        }
+//        while(!m.isConnected()){
+//            Thread.sleep(100);
+//        }
         /*
          * bootstrap() creates some necessary znodes.
          */
-        m.bootstrap();
+//        m.bootstrap();
         
         /*
          * now runs for master.
          */
-        m.runForMaster();
+//        m.runForMaster();
         
-        while(!m.isExpired()){
-            Thread.sleep(1000);
-        }   
+//        while(!m.isExpired()){
+//            Thread.sleep(1000);
+//        }
 
+        //关闭句柄
         m.stopZK();
     }    
 }
