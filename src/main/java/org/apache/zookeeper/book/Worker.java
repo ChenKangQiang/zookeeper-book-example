@@ -295,6 +295,7 @@ public class Worker implements Watcher, Closeable {
                                 return this;
                             }
 
+                            @Override
                             public void run() {
                                 if (children == null) {
                                     return;
@@ -319,6 +320,9 @@ public class Worker implements Watcher, Closeable {
         }
     };
 
+    /**
+     * 获取任务数据后的回调实现
+     */
     DataCallback taskDataCallback = new DataCallback() {
         public void processResult(int rc, String path, Object ctx, byte[] data, Stat stat) {
             switch (Code.get(rc)) {

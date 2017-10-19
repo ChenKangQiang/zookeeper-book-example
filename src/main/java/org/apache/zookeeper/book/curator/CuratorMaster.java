@@ -161,6 +161,8 @@ public class CuratorMaster implements Closeable, LeaderSelectorListener{
         workersCache.start();
         
         (new RecoveredAssignments(client.getZookeeperClient().getZooKeeper())).recover( new RecoveryCallback() {
+
+            @Override
             public void recoveryComplete (int rc, List<String> tasks) {
                 try{
                     if(rc == RecoveryCallback.FAILED) {

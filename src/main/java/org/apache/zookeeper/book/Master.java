@@ -268,14 +268,17 @@ public class Master implements Watcher, Closeable {
         switch (KeeperException.Code.get(rc)) {
             case CONNECTIONLOSS:
                 checkMaster();
+
                 break;
             case OK:
                 state = MasterStates.ELECTED;
                 takeLeadership();
+
                 break;
             case NODEEXISTS:
                 state = MasterStates.NOTELECTED;
                 masterExists();
+
                 break;
             default:
                 state = MasterStates.NOTELECTED;
@@ -300,6 +303,7 @@ public class Master implements Watcher, Closeable {
 
                     break;
                 case OK:
+
                     break;
                 case NONODE:
                     state = MasterStates.RUNNING;
@@ -315,6 +319,10 @@ public class Master implements Watcher, Closeable {
         }
     };
 
+
+    /**
+     * /master节点监视器，通知/master奔溃信息
+     */
     Watcher masterExistsWatcher = new Watcher() {
         public void process(WatchedEvent e) {
             if (e.getType() == EventType.NodeDeleted) {
@@ -419,6 +427,9 @@ public class Master implements Watcher, Closeable {
         }
     }
 
+    /**
+     * 从节点列表监视器
+     */
     Watcher workersChangeWatcher = new Watcher() {
         public void process(WatchedEvent e) {
             if (e.getType() == EventType.NodeChildrenChanged) {
@@ -429,6 +440,10 @@ public class Master implements Watcher, Closeable {
         }
     };
 
+    /**
+     * 获取从节点列表
+     * 列表监视器在监视到从节点发生变化时，会调用该方法
+     */
     void getWorkers() {
         zk.getChildren("/workers",
                 workersChangeWatcher,
@@ -438,7 +453,7 @@ public class Master implements Watcher, Closeable {
 
     ChildrenCallback workersGetChildrenCallback = new ChildrenCallback() {
         public void processResult(int rc, String path, Object ctx, List<String> children) {
-            switch (Code.get(rc)) {
+            switch (KeeperException.Code.get(rc)) {
                 case CONNECTIONLOSS:
                     getWorkers();
                     break;
@@ -641,6 +656,9 @@ public class Master implements Watcher, Closeable {
      ******************************************************
      */
 
+    /**
+     * 任务变化监视器
+     */
     Watcher tasksChangeWatcher = new Watcher() {
         public void process(WatchedEvent e) {
             if (e.getType() == EventType.NodeChildrenChanged) {
@@ -651,6 +669,10 @@ public class Master implements Watcher, Closeable {
         }
     };
 
+    /**
+     * 获取任务列表
+     * 当任务监视器监测到任务列表发生变化，会调用该方法
+     */
     void getTasks() {
         zk.getChildren("/tasks",
                 tasksChangeWatcher,
@@ -687,12 +709,20 @@ public class Master implements Watcher, Closeable {
         }
     };
 
+    /**
+     * 分配任务
+     * @param tasks
+     */
     void assignTasks(List<String> tasks) {
         for (String task : tasks) {
             getTaskData(task);
         }
     }
 
+    /**
+     * 获取任务数据
+     * @param task
+     */
     void getTaskData(String task) {
         zk.getData("/tasks/" + task,
                 false,
@@ -732,6 +762,11 @@ public class Master implements Watcher, Closeable {
         }
     };
 
+    /**
+     * 创建任务分配节点，记录分配情况
+     * @param path
+     * @param data
+     */
     void createAssignment(String path, byte[] data) {
         zk.create(path,
                 data,

@@ -40,6 +40,9 @@ import org.apache.zookeeper.KeeperException.Code;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 应用客户端类
+ */
 public class Client implements Watcher, Closeable {
     private static final Logger LOG = LoggerFactory.getLogger(Master.class);
     
@@ -97,7 +100,13 @@ public class Client implements Watcher, Closeable {
     /*
      * Executes a sample task and watches for the result
      */
-    
+
+    /**
+     * 提交一个简单的任务
+     *
+     * @param task
+     * @param taskCtx
+     */
     void submitTask(String task, TaskObject taskCtx){
         taskCtx.setTask(task);
         zk.create("/tasks/task-", 
